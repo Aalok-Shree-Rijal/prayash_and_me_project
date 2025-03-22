@@ -59,6 +59,7 @@ form button:hover {
 
 .transactions {
   margin-top: 20px;
+  width: 800px;
   display: none;
 }
 
@@ -102,9 +103,41 @@ form button:hover {
 th {
   border: 1px solid black;
   padding: 1rem;
-  text-align: center;
 }
 
 #data-container {
   width: 100%;
+}
+
+#data-container tr {
+  max-width: 800px;
+}
+
+td {
+  text-wrap: wrap;
+  max-width: 160px;
+  overflow: hidden;
+}
+
+td:hover {
+  overflow: visible;
+}
+
+.delete-button {
+  background-color: var(--bg-color);
+  border: none;
+  width: 100%;
+  height: auto;
+
+  svg {
+    height: 1rem;
+    width: auto;
+    transition: ease-in-out 0.2s;
+    display: block;
+    margin: 0 auto;
+  }
+
+  svg:hover {
+    color: red;
+  }
 }

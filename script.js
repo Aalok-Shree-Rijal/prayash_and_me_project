@@ -2,11 +2,13 @@
 
 let newBalance = 0;  //global variable
 let myObject = {};
-let descriptionArr = [];
-let amountArr = [];
-let typeArr = [];
-let payment_methodArr = [];
-let dateArr = [];
+myObject.description = [];
+myObject.amount = [];
+myObject.type = [];
+myObject.payment_method = [];
+myObject.date = [];
+myObject.id = [];
+let x = 0;
 
 
 function dataModify() {
@@ -18,7 +20,7 @@ function dataModify() {
     let transactions = document.getElementById("data-container");
     let form = document.getElementById("transaction-form");
     let balance = document.getElementById("balance");
-    newBalance = JSON.parse(localStorage.getItem('storedBalance'));
+    newBalance = JSON.parse(localStorage.getItem('storedBalance')) || 0;
     document.getElementsByClassName("transactions")[0].style.display = "block";
 
     if (description === "" || description === null || amount === "" || amount === null || date === "" || date === null) {
@@ -38,6 +40,9 @@ function dataModify() {
 
     const tr = document.createElement("tr");
     tr.style.backgroundColor = color;
+    x++;
+    let id = "row" + x;
+    tr.setAttribute("id", id);
 
 
     tr.innerHTML = `
@@ -45,7 +50,29 @@ function dataModify() {
             <td>Rs ${amount}</td>
             <td>${type}</td>
             <td>${payment_method}</td>
-            <td>${date}</td>`;
+            <td>${date}</td>
+            <td><button onclick="deleteTodo('${id}')" class="delete-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100"
+                            viewBox="0,0,256,256">
+                            <g fill-opacity="0" fill="currentcolor" fill-rule="nonzero" stroke="none" stroke-width="1"
+                                stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray=""
+                                stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none"
+                                text-anchor="none" style="mix-blend-mode: normal">
+                                <path d="M0,256v-256h256v256z" id="bgRectangle"></path>
+                            </g>
+                            <g fill="currentcolor" fill-rule="nonzero" stroke="none" stroke-width="1"
+                                stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray=""
+                                stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none"
+                                text-anchor="none" style="mix-blend-mode: normal">
+                                <g transform="scale(10.66667,10.66667)">
+                                    <path
+                                        d="M10,2l-1,1h-6v2h18v-2h-6l-1,-1zM4.36523,7l1.70313,15h11.86328l1.70313,-15z">
+                                    </path>
+                                </g>
+                            </g>
+                        </svg>
+                    </button>
+                    </td>`;
 
     transactions.appendChild(tr);
     form.reset();
@@ -54,39 +81,24 @@ function dataModify() {
     localStorage.setItem('storedBalance', JSON.stringify(newBalance));
 
     console.log("calling updating data")
-    updateStorage(description, amount, type, payment_method, date);
+    updateStorage(description, amount, type, payment_method, date, id);
 }
 
-function updateStorage(description, amount, type, payment_method, date) {
+function updateStorage(description, amount, type, payment_method, date, id) {
 
     console.log("updating data")
 
-    descriptionArr.push(JSON.stringify(description));
-    amountArr.push(JSON.stringify(amount));
-    typeArr.push(JSON.stringify(type));
-    payment_methodArr.push(JSON.stringify(payment_method));
-    dateArr.push(JSON.stringify(date));
-
-    console.log(descriptionArr);
-    console.log(amountArr);
-    console.log(typeArr)
-    console.log(payment_methodArr)
-    console.log(dateArr);
-
-    myObject.description = descriptionArr;
-    myObject.amount = amountArr;
-    myObject.type = typeArr;
-    myObject.payment_method = payment_methodArr;
-    myObject.date = dateArr;
+    myObject.description.push(description);
+    myObject.amount.push(amount);
+    myObject.type.push(type);
+    myObject.payment_method.push(payment_method);
+    myObject.date.push(date);
+    myObject.id.push(id);
 
     console.log(JSON.stringify(myObject));
 
     localStorage.setItem('Object', JSON.stringify(myObject));
-    localStorage.setItem('descriptionArray', JSON.stringify(descriptionArr));
-    localStorage.setItem('amountArray', JSON.stringify(amountArr));
-    localStorage.setItem('typeArray', JSON.stringify(typeArr));
-    localStorage.setItem('payment_methodArray', JSON.stringify(payment_methodArr));
-    localStorage.setItem('dateArray', JSON.stringify(dateArr));
+    console.log(myObject);
 
     console.log("data updating completed!");
 }
@@ -94,31 +106,16 @@ function updateStorage(description, amount, type, payment_method, date) {
 function retrieveData() {
     console.log("data retrieval activated");
 
-    storedData = JSON.parse(localStorage.getItem('Object'));
-    storedBalance = JSON.parse(localStorage.getItem('storedBalance'));
-    console.log(storedBalance);
+    let storedData = JSON.parse(localStorage.getItem('Object'));
+    storedBalance = JSON.parse(localStorage.getItem('storedBalance')) || 0;
+    console.log("previously stored balace is ", storedBalance);
+    console.log(JSON.stringify(storedData));
 
 
     if (storedData === null || storedData === "") {
         console.log("exiting data retrieval, no previous records found !");
         return 0;
     }
-
-    descriptionArr = JSON.parse(localStorage.getItem('descriptionArray'));
-    amountArr = JSON.parse(localStorage.getItem('amountArray'));
-    typeArr = JSON.parse(localStorage.getItem('typeArray'));
-    payment_methodArr = JSON.parse(localStorage.getItem('payment_methodArray'));
-    dateArr = JSON.parse(localStorage.getItem('dateArray'));
-
-    console.log(descriptionArr);
-    console.log(amountArr);
-    console.log(typeArr)
-    console.log(payment_methodArr)
-    console.log(dateArr);
-
-    myObject = JSON.parse(localStorage.getItem('Object'));
-
-    console.log(JSON.stringify(myObject));
 
     let transactions = document.getElementById("data-container");
     let balance = document.getElementById("balance");
@@ -130,29 +127,51 @@ function retrieveData() {
         document.getElementsByClassName("transactions")[0].style.display = "block";
         for (i = 0; i < storedData.description.length; i++) {
 
-            if (JSON.parse(storedData.type[i]) === "income") {
+            let type = storedData.type[i];
+            console.log(type);
+            if (type === "income") {
                 color = "lightgreen";
             }
 
             else {
                 color = "lightcoral";
             }
+            console.log(color)
+
+            let id = storedData.id[i];
 
             const tr = document.createElement("tr");
             tr.style.backgroundColor = color;
-
-            let parsedDescription = JSON.parse(storedData.description[i]);
-            let parsedAmount = JSON.parse(storedData.amount[i]);
-            let parsedType = JSON.parse(storedData.type[i]);
-            let parsedPayment_method = JSON.parse(storedData.payment_method[i]);
-            let parsedDate = JSON.parse(storedData.date[i]);
+            tr.setAttribute("id", id);
 
             tr.innerHTML = `
-                <td>${parsedDescription}</td>
-                <td>Rs ${parsedAmount}</td>
-                <td>${parsedType}</td>
-                <td>${parsedPayment_method}</td>
-                <td>${parsedDate}</td>`
+                <td>${storedData.description[i]}</td>
+                <td>Rs ${storedData.amount[i]}</td>
+                <td>${storedData.type[i]}</td>
+                <td>${storedData.payment_method[i]}</td>
+                <td>${storedData.date[i]}</td>
+                <td><button onclick="deleteTodo('${id}')" class="delete-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100"
+                            viewBox="0,0,256,256">
+                            <g fill-opacity="0" fill="currentcolor" fill-rule="nonzero" stroke="none" stroke-width="1"
+                                stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray=""
+                                stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none"
+                                text-anchor="none" style="mix-blend-mode: normal">
+                                <path d="M0,256v-256h256v256z" id="bgRectangle"></path>
+                            </g>
+                            <g fill="currentcolor" fill-rule="nonzero" stroke="none" stroke-width="1"
+                                stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray=""
+                                stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none"
+                                text-anchor="none" style="mix-blend-mode: normal">
+                                <g transform="scale(10.66667,10.66667)">
+                                    <path
+                                        d="M10,2l-1,1h-6v2h18v-2h-6l-1,-1zM4.36523,7l1.70313,15h11.86328l1.70313,-15z">
+                                    </path>
+                                </g>
+                            </g>
+                        </svg>
+                    </button>
+                    </td>`
 
             transactions.appendChild(tr);
         }
@@ -163,4 +182,43 @@ function retrieveData() {
 window.onload = function () {
     console.log("processing data retrieval")
     retrieveData();
+}
+
+function deleteTodo(id) {
+    console.log('deleting task !');
+
+    let myObject = JSON.parse(localStorage.getItem('Object'));
+    let storedBalance = JSON.parse(localStorage.getItem('storedBalance'));
+    console.log(storedBalance);
+
+    for (let i = 0; i < myObject.description.length; i++) {
+        if (myObject.id[i] === id) {
+
+            if (myObject.type[i] === "income") {
+                storedBalance = storedBalance - Number(myObject.amount[i]);
+            }
+            else {
+                storedBalance = storedBalance + Number(myObject.amount[i]);
+            }
+
+            myObject.description.splice(i, 1);
+            myObject.amount.splice(i, 1);
+            myObject.type.splice(i, 1);
+            myObject.payment_method.splice(i, 1);
+            myObject.date.splice(i, 1);
+            myObject.id.splice(i, 1);
+        }
+    }
+    document.getElementById(id).remove();
+
+    if (storedBalance === 0) {
+        document.getElementsByClassName("transactions")[0].style.display = "none";
+    }
+
+    localStorage.setItem('Object', JSON.stringify(myObject));
+    localStorage.setItem('storedBalance', JSON.stringify(storedBalance));
+
+    window.location.reload();
+    retrieveData();
+    console.log('task deleted !');
 }
