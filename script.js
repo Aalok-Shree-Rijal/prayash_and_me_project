@@ -88,6 +88,7 @@ function updateStorage(description, amount, type, payment_method, date, id) {
 
     console.log("updating data")
 
+    myObject = JSON.parse(localStorage.getItem('Object'));
     myObject.description.push(description);
     myObject.amount.push(amount);
     myObject.type.push(type);
@@ -114,6 +115,14 @@ function retrieveData() {
 
     if (storedData === null || storedData === "") {
         console.log("exiting data retrieval, no previous records found !");
+        storedData = {};
+        storedData.description = [];
+        storedData.amount = [];
+        storedData.type = [];
+        storedData.payment_method = [];
+        storedData.date = [];
+        storedData.id = [];
+        localStorage.setItem('Object', JSON.stringify(storedData));
         return 0;
     }
 
@@ -126,7 +135,7 @@ function retrieveData() {
     if (storedData && storedData.description.length > 0) {
         document.getElementsByClassName("transactions")[0].style.display = "block";
         for (i = 0; i < storedData.description.length; i++) {
-
+            x++;
             let type = storedData.type[i];
             console.log(type);
             if (type === "income") {
